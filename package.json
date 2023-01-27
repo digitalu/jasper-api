@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
-    "start": "node ./source/index.js",
-    "dev": "nodemon --config nodemon.json ./source/index.ts"
+    "start": "node ./api/index.js",
+    "dev": "nodemon --config nodemon.json ./api/index.ts"
   },
   "repository": {
     "type": "git",
@@ -19,8 +19,11 @@
   },
   "homepage": "https://github.com/digitalu/jasper-api#readme",
   "dependencies": {
+    "axios": "^1.2.4",
+    "body-parser": "^1.20.1",
     "bridge": "^2.0.36",
     "express": "^4.18.2",
+    "form-data": "^4.0.0",
     "formidable": "^2.1.1",
     "zod": "^3.20.2"
   },
