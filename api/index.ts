@@ -1,68 +1,32 @@
-import express, { NextFunction, Request, Response } from 'express';
-import { handler, initBridge, onError, httpError, StatusCode, apply } from 'bridge';
-import formidable from 'formidable';
+import { initBridge, handler, httpError, StatusCode, apply } from 'bridge';
+import express from 'express';
 import z from 'zod';
 
+const port = 8080;
+
+// It is also possible to use pure HTTP Server
 const app = express();
+// app.use(bodyParser.json());
 
 const authMid = handler({
   headers: z.object({ token: z.string() }),
+  middlewares: [] as const,
   resolve: ({ headers }) => {
-    if (headers.token !== 'private_token') return httpError(StatusCode.UNAUTHORIZED, 'Wrong token');
-    else return { batista: 89 };
-  },
-});
-
-const authMid2 = handler({
-  headers: z.object({ bonjour: z.string() }),
-  middlewares: apply(authMid),
-  resolve: ({ headers, mid }) => {
-    if (headers.bonjour !== 'private_token') return httpError(StatusCode.UNAUTHORIZED, 'Wrong token');
-    else return { firstName: 'John', name: 'Doe', age: 21, ...mid };
-  },
-});
-
-const hello = handler({
-  body: z.object({ name: z.string() }),
-  query: z.object({ name: z.string() }),
-  middlewares: apply(authMid2),
-  resolve: ({ body, query, headers, mid }) => {
-    if (query.name === 'has') return httpError(StatusCode.UNAUTHORIZED, 'Dont like has', { reason: 'bnla' });
-
-    const res = authMid.resolve({ headers: { token: '' } });
-    return `Hey ${name}`;
+    if (headers.token === 'secretToken') return { _id: 'dfdf' };
+    return httpError(StatusCode.UNAUTHORIZED, 'Wrong Token');
   },
 });
 
 const routes = {
-  hello,
-  hey: hello,
+  user: handler({
+    middlewares: apply(authMid),
+    resolve: ({ middlewares }) => middlewares._id,
+  }),
+  auth: authMid,
 };
 
-const errorHandler = onError(({ path, error }) => {
-  console.log(path, error);
-});
+app.use('/bridge', initBridge({ routes }).expressMiddleware());
 
-app.use('/', initBridge({ routes, errorHandler }).expressMiddleware());
-
-// const ctrl = (req: Request, res: Response) => {
-//   const bodySchema = z.object({
-//     name: z.string(),
-//   });
-
-//   const val = bodySchema.safeParse(req.body);
-//   if (!val.success) return res.json(val);
-
-//   const body = val.data;
-
-//   res.json({ sub: { text: `Hello ${body.name.toLowerCase()}` } });
-// };
-
-// /**
-//  * METADATA
-//  */
-// app.get('/', ctrl);
-
-app.listen(8080, () => {
-  console.log('Listening on 8080');
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
 });

@@ -1,3 +1,9 @@
 import { API } from './sdk';
 
-API.hello({ headers: { token: 'hhd' } } as any).then((data) => )
+API.user.getMe({ headers: { token: 'euthj' } }).then((res) => {
+  if (res.data) {
+    res.data;
+  } else {
+    res.error;
+  }
+});
