@@ -26,6 +26,9 @@ const routes = {
     middlewares: apply(authMid),
     resolve: ({ middlewares }) => middlewares._id,
   }),
+  us: {
+    test,
+  },
   auth: authMid,
   test,
 };
