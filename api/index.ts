@@ -21,6 +21,10 @@ const test = handler({
   resolve: () => 'Salut toi' as const,
 });
 
+const test2 = handler({
+  resolve: () => {},
+});
+
 const routes = {
   user: handler({
     middlewares: apply(authMid),
@@ -31,6 +35,7 @@ const routes = {
   },
   auth: authMid,
   test,
+  test2,
 };
 
 app.use('/bridge', initBridge({ routes }).expressMiddleware());
