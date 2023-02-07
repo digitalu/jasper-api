@@ -17,12 +17,17 @@ const authMid = handler({
   },
 });
 
+const test = handler({
+  resolve: () => 'Salut toi' as const,
+});
+
 const routes = {
   user: handler({
     middlewares: apply(authMid),
     resolve: ({ middlewares }) => middlewares._id,
   }),
   auth: authMid,
+  test,
 };
 
 app.use('/bridge', initBridge({ routes }).expressMiddleware());
